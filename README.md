@@ -43,3 +43,36 @@ El proyecto usa `python-decouple` y espera estas variables:
 - `DB_HOST`
 - `DB_PORT`
 
+
+## Instalación de la base de datos con DBeaver
+
+El proyecto incluye una copia manual de la base de datos en formato `.backup` o `.sql` para restaurar directamente con DBeaver.
+
+### Opción 1: restaurar un archivo `.backup`
+
+1. Crear en PostgreSQL una base de datos vacía con el mismo nombre configurado en `DB_NAME`.
+2. Abrir DBeaver y conectarse al servidor PostgreSQL.
+3. Hacer clic derecho sobre la base de datos creada.
+4. Ir a `Tools > Restore` ó `Herramientas > Restaurar Backup`.
+5. Seleccionar el archivo `.backup`.
+6. Ejecutar la restauración y esperar a que termine.
+
+### Opción 2: restaurar un archivo `.sql`
+
+1. Crear en PostgreSQL una base de datos vacía con el mismo nombre configurado en `DB_NAME`.
+2. Abrir DBeaver y conectarse a esa base de datos.
+3. Abrir el archivo `.sql` en el editor SQL de DBeaver.
+4. Ejecutar el script completo sobre la base de datos vacía.
+
+### Comprobación final
+
+Después de restaurar la base de datos, ejecutar:
+
+```powershell
+.\.venv\Scripts\python.exe manage.py migrate
+.\.venv\Scripts\python.exe manage.py runserver
+```
+
+Si la copia restaurada está completa, `migrate` no debería aplicar cambios nuevos y el proyecto debería arrancar con los datos ya cargados.
+
+

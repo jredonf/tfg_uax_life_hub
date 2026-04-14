@@ -1,0 +1,13 @@
+{# Resumen del usuario #}
+<div class="profile-page__summary">
+    <div class="profile-avatar profile-avatar--large">
+        {% if request.user.profile_image %}
+        <img src="{{ request.user.profile_image.url }}" alt="{{ request.user.display_name }}">
+        {% else %}
+        <span>{{ request.user.avatar_initial }}</span>
+        {% endif %}
+    </div>
+    <p class="eyebrow">Perfil de usuario</p>
+    <h1>{{ request.user.display_name }}</h1>
+    <p class="profile-page__meta">{{ request.user.email|default:"Sin correo configurado" }}</p>
+</div>

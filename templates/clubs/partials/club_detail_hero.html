@@ -1,0 +1,61 @@
+{# Hero del club #}
+<section class="club-detail-hero">
+    <div class="container club-detail-hero__grid">
+        {# Información principal y acciones del club #}
+        <div class="club-detail-hero__copy">
+            <p class="eyebrow">{{ club.category.name }}</p>
+            <h1>{{ club.name }}</h1>
+            <p>{{ club.short_description }}</p>
+            <div class="club-detail-hero__status">
+                <div class="club-detail-hero__meta">
+                    <span>{{ club.active_members_count }} miembro{% if club.active_members_count != 1 %}s{% endif %}</span>
+                    <span>{{ club.campus|default:"Campus por definir" }}</span>
+                </div>
+                <div class="club-detail-hero__actions">
+                    {% if is_member %}
+                    <button type="button" class="btn-danger-soft club-detail-hero__leave-button" data-leave-open>
+                        <svg class="club-detail-hero__leave-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M6.4 5.1 12 10.7l5.6-5.6 1.3 1.3-5.6 5.6 5.6 5.6-1.3 1.3-5.6-5.6-5.6 5.6-1.3-1.3 5.6-5.6-5.6-5.6 1.3-1.3Z" />
+                        </svg>
+                        <span>Darse de baja</span>
+                    </button>
+                    {% if can_toggle_member_view %}
+                    {% if view_as_member %}
+                    <a href="{% url 'clubs:detail' club.slug %}" class="club-polls-status club-view-toggle">
+                        <svg class="club-view-toggle__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M12 5.25c4.65 0 8.3 3.18 10 6.75-1.7 3.57-5.35 6.75-10 6.75S3.7 15.57 2 12c1.7-3.57 5.35-6.75 10-6.75Zm0 11.25A4.5 4.5 0 1 0 12 7.5a4.5 4.5 0 0 0 0 9Zm0-1.8A2.7 2.7 0 1 1 12 9.3a2.7 2.7 0 0 1 0 5.4Z" />
+                        </svg>
+                        <span>Cambiar a vista de administrador</span>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'clubs:detail' club.slug %}?view=member" class="club-polls-status club-view-toggle">
+                        <svg class="club-view-toggle__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M12 5.25c4.65 0 8.3 3.18 10 6.75-1.7 3.57-5.35 6.75-10 6.75S3.7 15.57 2 12c1.7-3.57 5.35-6.75 10-6.75Zm0 11.25A4.5 4.5 0 1 0 12 7.5a4.5 4.5 0 0 0 0 9Zm0-1.8A2.7 2.7 0 1 1 12 9.3a2.7 2.7 0 0 1 0 5.4Z" />
+                        </svg>
+                        <span>Cambiar a vista de miembro</span>
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                    {% elif request.user.is_authenticated %}
+                    <form action="{% url 'clubs:join' club.slug %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="club-chip-button club-detail-hero__join-button">Unirse al club</button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" class="club-chip-button club-detail-hero__login-button" data-global-login-open>Iniciar sesión para unirse al club</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {# Imagen principal del club #}
+        <div class="club-detail-hero__media">
+            {% if club.image %}
+            <img src="{{ club.image.url }}" alt="{{ club.name }}">
+            {% elif club.cover_image %}
+            <img src="{{ club.cover_image.url }}" alt="{{ club.name }}">
+            {% else %}
+            <div class="club-detail-hero__placeholder">{{ club.name|slice:":1"|upper }}</div>
+            {% endif %}
+        </div>
+    </div>
+</section>

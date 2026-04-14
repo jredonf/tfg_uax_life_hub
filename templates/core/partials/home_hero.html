@@ -1,0 +1,49 @@
+{# Hero principal de la portada #}
+<section
+    class="hero"
+    {% if home_settings and home_settings.hero_image %}
+    style="background-image: url('{{ home_settings.hero_image.url }}');"
+    {% endif %}
+>
+    <div class="overlay"></div>
+
+    <div class="hero-content container">
+        <h1>
+            {% if home_settings %}
+                {{ home_settings.hero_title|linebreaksbr }}
+            {% else %}
+                DEPORTE<br>
+                UNIVERSITARIO<br>
+                UAX
+            {% endif %}
+        </h1>
+
+        <p>
+            {% if home_settings %}
+                {{ home_settings.hero_description|linebreaksbr }}
+            {% else %}
+                Desarrollo deportivo universitario.<br>
+                Instalaciones de alto rendimiento.<br>
+                Participa en ligas internas y clubes.
+            {% endif %}
+        </p>
+
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'clubs:list' %}" class="btn-primary">
+            {% if home_settings and home_settings.hero_button_text_logged_in %}
+                {{ home_settings.hero_button_text_logged_in }}
+            {% else %}
+                Explorar clubes
+            {% endif %}
+        </a>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn-primary" data-global-login-open>
+            {% if home_settings and home_settings.hero_button_text_logged_out %}
+                {{ home_settings.hero_button_text_logged_out }}
+            {% else %}
+                Iniciar sesión
+            {% endif %}
+        </a>
+        {% endif %}
+    </div>
+</section>

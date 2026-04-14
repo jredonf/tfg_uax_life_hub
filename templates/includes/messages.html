@@ -1,0 +1,19 @@
+{% if messages %}
+{# Bandeja de mensajes globales del sitio #}
+<div class="messages" aria-live="polite">
+    {% for message in messages %}
+    {# Mensaje individual con cierre manual #}
+    <div class="message {{ message.tags }}">
+        <span>{{ message }}</span>
+        <button
+            type="button"
+            class="message__close"
+            aria-label="Cerrar mensaje"
+            data-message-close
+        >
+            &times;
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

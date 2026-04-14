@@ -1,0 +1,36 @@
+{# Acceso de usuario o menú de cuenta #}
+<div class="login-btn {% if request.user.is_authenticated %}login-btn--account{% else %}login-btn--guest{% endif %}">
+    {% if request.user.is_authenticated %}
+    {# Menú desplegable de la cuenta #}
+    <div class="account-menu" data-account-menu>
+        <button
+            type="button"
+            class="account-menu__toggle"
+            aria-label="Abrir menú de usuario"
+            aria-expanded="false"
+            data-account-toggle
+        >
+            <span class="account-avatar">
+                {% if request.user.profile_image %}
+                <img src="{{ request.user.profile_image.url }}" alt="{{ request.user.display_name }}">
+                {% else %}
+                <span>{{ request.user.avatar_initial }}</span>
+                {% endif %}
+            </span>
+        </button>
+        <div class="account-menu__dropdown" data-account-dropdown hidden>
+            <div class="account-menu__summary">
+                <span class="account-menu__name">{{ request.user.display_name }}</span>
+                <span class="account-menu__email">{{ request.user.email }}</span>
+            </div>
+            <a href="{% url 'accounts:profile' %}" class="account-menu__item">Ver perfil</a>
+            <form action="{% url 'accounts:logout' %}" method="post" class="account-menu__logout-form">
+                {% csrf_token %}
+                <button type="submit" class="account-menu__item account-menu__item--logout">Cerrar sesión</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <a href="{% url 'accounts:login' %}" class="btn-outline" data-global-login-open>Iniciar sesión</a>
+    {% endif %}
+</div>

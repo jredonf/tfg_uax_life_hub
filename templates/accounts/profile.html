@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi perfil | UAX Life Hub{% endblock %}
+
+{% block content %}
+<section class="page-section profile-page">
+    <div class="container">
+        {# Estructura principal del perfil #}
+        <div class="profile-page__shell">
+            {% include 'accounts/partials/profile_summary.html' %}
+            {% include 'accounts/partials/profile_form.html' %}
+        </div>
+    </div>
+</section>
+{% endblock %}

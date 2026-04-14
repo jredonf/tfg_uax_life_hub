@@ -1,0 +1,51 @@
+{# Tarjetas de categorías #}
+<div class="category-card-grid">
+    {% for category in categories %}
+    <article
+        class="category-card"
+        role="button"
+        tabindex="0"
+        data-modal-open="{{ category.slug }}"
+        aria-label="Ver clubes de {{ category.name }}"
+    >
+        <div class="category-card__shine"></div>
+        <div class="category-card__media">
+            {% if category.image %}
+            <img
+                src="{{ category.image.url }}"
+                alt="{{ category.name }}"
+                class="category-card__image"
+            >
+            {% else %}
+            <div class="category-card__placeholder">
+                <span>{{ category.name|slice:":1"|upper }}</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="category-card__content">
+            <p class="category-card__label">Categoría UAX</p>
+            <h2>{{ category.name }}</h2>
+            <p class="category-card__description">
+                {% if category.description %}
+                    {{ category.description }}
+                {% else %}
+                    Categoría con clubes activos dentro del ecosistema universitario UAX.
+                {% endif %}
+            </p>
+        </div>
+        <div class="category-card__footer">
+            <div class="category-card__stat">
+                <span class="category-card__stat-value">{{ category.published_clubs_count }}</span>
+                <span class="category-card__stat-label">Clubes</span>
+            </div>
+            <button
+                type="button"
+                class="category-card__action"
+                data-modal-open="{{ category.slug }}"
+            >
+                Ver clubes
+            </button>
+        </div>
+    </article>
+    {% endfor %}
+</div>

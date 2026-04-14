@@ -1,0 +1,260 @@
+{% load rich_text %}
+
+{# Contenido principal del detalle del club #}
+<section class="page-section club-detail">
+    <div class="container club-detail__layout">
+        {# Ficha general del club #}
+        <article class="club-detail-card club-detail-card--wide club-detail-card--general" id="ficha">
+            <div class="club-detail-card__header club-detail-card__header--inline">
+                <div>
+                    <p class="eyebrow">Ficha general</p>
+                    <h2>Información del club</h2>
+                </div>
+                {% if can_manage %}
+                <button type="button" class="club-create-news-button" data-edit-general-toggle>
+                    Editar ficha general
+                </button>
+                {% endif %}
+            </div>
+            <div class="club-detail-card__body">
+                <div class="rich-text-content">
+                    {% if club.description %}
+                    {{ club.description|rich_text }}
+                    {% else %}
+                    <p>La descripción de este club está pendiente de completarse.</p>
+                    {% endif %}
+                </div>
+                <div class="club-rules">
+                    <h3>Normas del club</h3>
+                    <div class="rich-text-content">
+                        {% if club.rules %}
+                        {{ club.rules|rich_text }}
+                        {% else %}
+                        <p>Las normas del club se publicarán próximamente.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if can_manage %}
+            {# Modal de edición de la ficha general #}
+            <div class="club-create-news-modal club-edit-general-modal" data-edit-general-panel hidden>
+                <div class="club-create-news-modal__backdrop" data-edit-general-close></div>
+                <div class="club-create-news-modal__dialog club-edit-general-modal__dialog" role="dialog" aria-modal="true" aria-label="Editar ficha general">
+                    <button type="button" class="club-event-card__edit-close" aria-label="Cerrar editar ficha general" data-edit-general-close>&times;</button>
+                <form action="{% url 'clubs:update_general' club.slug %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>Editar ficha general</h2>
+                    {{ general_form.non_field_errors }}
+                    <div class="club-image-editor">
+                        <div class="club-image-editor__preview">
+                            {% if club.image %}
+                            <img src="{{ club.image.url }}" alt="Imagen actual de {{ club.name }}">
+                            {% else %}
+                            <div class="club-image-editor__empty">Sin imagen actual</div>
+                            {% endif %}
+                        </div>
+                        <div class="club-image-editor__content">
+                            <p class="club-image-editor__title">Imagen del club</p>
+                            <p class="club-image-editor__hint">Sube una nueva imagen o elimina la actual si quieres dejar la ficha sin imagen principal.</p>
+                            <input type="file" name="{{ general_form.image.html_name }}" id="{{ general_form.image.id_for_label }}" accept="image/*">
+                            {% if club.image %}
+                            <label class="club-image-editor__remove" for="id_image_clear">
+                                <input type="checkbox" name="image-clear" id="id_image_clear">
+                                <span>Eliminar imagen actual</span>
+                            </label>
+                            {% endif %}
+                            {{ general_form.image.errors }}
+                        </div>
+                    </div>
+                    <p>
+                        <label for="{{ general_form.description.id_for_label }}">{{ general_form.description.label }}</label>
+                        {{ general_form.description }}
+                        {{ general_form.description.errors }}
+                    </p>
+                    <p>
+                        <label for="{{ general_form.rules.id_for_label }}">{{ general_form.rules.label }}</label>
+                        {{ general_form.rules }}
+                        {{ general_form.rules.errors }}
+                    </p>
+                    <button type="submit" class="club-chip-button">Guardar ficha</button>
+                </form>
+                </div>
+            </div>
+            {% endif %}
+        </article>
+
+        <div class="club-detail-side-stack">
+        {# Bloque de contacto #}
+        <aside class="club-detail-card club-detail-card--contact" id="contacto">
+            <div class="club-detail-card__header club-detail-card__header--inline">
+                <div>
+                    <p class="eyebrow">Contacto</p>
+                    <h2>Habla con el club</h2>
+                </div>
+                {% if can_manage %}
+                <button type="button" class="club-create-news-button" data-edit-contact-toggle>
+                    Editar contacto
+                </button>
+                {% endif %}
+            </div>
+            <div class="club-contact-list">
+                <p><strong>Email:</strong> {{ club.contact_email|default:"Por definir" }}</p>
+                <p><strong>Teléfono:</strong> {{ club.contact_phone|default:"Por definir" }}</p>
+                <p><strong>Campus:</strong> {{ club.campus|default:"Por definir" }}</p>
+                {% if club.contact_url %}
+                <a href="{{ club.contact_url }}" target="_blank" rel="noopener" class="club-contact-link">Abrir enlace de contacto</a>
+                {% endif %}
+            </div>
+            {% if can_manage %}
+            {# Modal de edición del contacto #}
+            <div class="club-create-news-modal club-edit-contact-modal" data-edit-contact-panel hidden>
+                <div class="club-create-news-modal__backdrop" data-edit-contact-close></div>
+                <div class="club-create-news-modal__dialog club-edit-contact-modal__dialog" role="dialog" aria-modal="true" aria-label="Editar contacto">
+                    <button type="button" class="club-event-card__edit-close" aria-label="Cerrar editar contacto" data-edit-contact-close>&times;</button>
+                <form action="{% url 'clubs:update_contact' club.slug %}" method="post">
+                    {% csrf_token %}
+                    <h2>Editar contacto</h2>
+                    {{ contact_form.as_p }}
+                    <button type="submit" class="club-chip-button">Guardar contacto</button>
+                </form>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+
+        {# Bloque de encuestas #}
+        <aside class="club-detail-card club-detail-card--polls" id="encuestas">
+            <div class="club-detail-card__header club-detail-card__header--inline">
+                <div>
+                    <p class="eyebrow">Encuestas</p>
+                    <h2>Opinión del club</h2>
+                </div>
+                {% if can_manage %}
+                <button type="button" class="club-create-news-button" data-create-poll-toggle>Crear encuesta</button>
+                {% endif %}
+            </div>
+            {% if can_manage %}
+            {# Modal de creación de encuestas #}
+            <div class="club-create-news-modal club-create-poll-modal" data-create-poll-panel hidden>
+                <div class="club-create-news-modal__backdrop" data-create-poll-close></div>
+                <div class="club-create-news-modal__dialog club-create-poll-modal__dialog" role="dialog" aria-modal="true" aria-label="Crear encuesta">
+                    <button type="button" class="club-event-card__edit-close" aria-label="Cerrar crear encuesta" data-create-poll-close>&times;</button>
+                    <form action="{% url 'clubs:create_poll' club.slug %}" method="post" class="club-poll-form">
+                        {% csrf_token %}
+                        <h2>Crear encuesta</h2>
+                        {{ poll_form.as_p }}
+                        <button type="button" class="club-poll-form__add-option" data-poll-add-option>Añadir opción</button>
+                        <button type="submit" class="club-chip-button">Crear encuesta</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            {% if polls %}
+            {# Galería de encuestas del club #}
+            <div class="club-poll-gallery" data-poll-gallery>
+            <div class="club-poll-grid">
+                {% for poll in polls %}
+            {# Tarjeta de una encuesta #}
+            <div class="club-poll-card" data-poll-card>
+                <div class="club-poll-card__header">
+                    <div class="club-poll-card__intro">
+                        <h3>{{ poll.title }}</h3>
+                        {% if poll.description %}
+                        <p>{{ poll.description }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="club-poll-card__chips">
+                        <span class="club-poll-card__chip {% if poll.visibility == 'private' %}club-poll-card__chip--private{% else %}club-poll-card__chip--public{% endif %}">{{ poll.get_visibility_display }}</span>
+                        <span class="club-poll-card__chip {% if poll.is_open_status %}club-poll-card__chip--active{% else %}club-poll-card__chip--closed{% endif %}">
+                            {% if poll.is_open_status %}Activa{% else %}Cerrada{% endif %}
+                        </span>
+                    </div>
+                    {% if poll.is_open_status and poll.closes_at %}
+                    <p
+                        class="club-poll-card__countdown"
+                        data-poll-countdown
+                        data-poll-closes-at="{{ poll.closes_at|date:'c' }}"
+                    >
+                        Cargando cierre...
+                    </p>
+                    {% endif %}
+                </div>
+                {% if poll.can_vote %}
+                <form action="{% url 'clubs:vote_poll' club.slug poll.id %}" method="post" class="club-poll-options">
+                    {% csrf_token %}
+                    {% for option in poll.options.all %}
+                    <label class="club-poll-option">
+                        <input type="radio" name="option_id" value="{{ option.id }}" required>
+                        <span>{{ option.text }}</span>
+                    </label>
+                    {% endfor %}
+                    <button type="submit" class="club-chip-button">Votar</button>
+                </form>
+                {% else %}
+                <div class="club-poll-results">
+                    {% for option in poll.options.all %}
+                    <div class="club-poll-result{% if option.is_selected_by_user %} is-selected{% endif %}">
+                        <div class="club-poll-result__label">
+                            <span>{{ option.text }}</span>
+                            <strong>{{ option.percentage }}%</strong>
+                        </div>
+                        <div class="club-poll-result__bar" aria-hidden="true">
+                            <span style="width: {{ option.percentage }}%;"></span>
+                        </div>
+                        <small>{{ option.votes_total }} voto{% if option.votes_total != 1 %}s{% endif %}</small>
+                    </div>
+                    {% endfor %}
+                    {% if not request.user.is_authenticated %}
+                    <p class="club-poll-card__hint">Inicia sesión como miembro para votar.</p>
+                    {% elif not is_member and not can_manage %}
+                    <p class="club-poll-card__hint">Solo los miembros del club pueden votar.</p>
+                    {% elif poll.user_has_voted %}
+                    <p class="club-poll-card__hint">Ya has votado en esta encuesta.</p>
+                    {% elif not poll.is_open_status %}
+                    <p class="club-poll-card__hint">La encuesta está cerrada.</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% if can_manage %}
+                <div class="club-poll-card__actions">
+                    {% if poll.is_open_status %}
+                    <form action="{% url 'clubs:close_poll' club.slug poll.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="club-poll-card__close-button">Cerrar encuesta</button>
+                    </form>
+                    {% endif %}
+                    <form action="{% url 'clubs:delete_poll' club.slug poll.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-danger-soft">Eliminar encuesta</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+                {% endfor %}
+            </div>
+            <div class="club-event-pagination club-poll-pagination" data-poll-pagination>
+                <button type="button" class="club-event-pagination__button" data-poll-prev aria-label="Ver encuesta anterior">
+                    &larr;
+                </button>
+                <span data-poll-page>1 / 1</span>
+                <button type="button" class="club-event-pagination__button" data-poll-next aria-label="Ver encuesta siguiente">
+                    &rarr;
+                </button>
+            </div>
+            </div>
+            {% else %}
+            <div class="club-polls-placeholder">
+                <span class="club-polls-placeholder__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                        <path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9.5L5 20.5V17H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 4v2h10V8H7Zm0 4v2h7v-2H7Z"></path>
+                    </svg>
+                </span>
+                <div>
+                    <strong>No hay encuestas activas</strong>
+                    <p>Cuando el club publique una encuesta, aparecerá aquí para que los miembros puedan participar.</p>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+        </div>
+

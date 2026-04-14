@@ -1,0 +1,61 @@
+{# Modal de autenticación para unirse a un club #}
+<div class="clubs-auth-modal" data-auth-modal hidden>
+    <div class="clubs-auth-modal__backdrop" data-auth-close></div>
+    <div
+        class="clubs-auth-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Iniciar sesión para unirte a un club"
+    >
+        <button
+            type="button"
+            class="clubs-auth-modal__close"
+            aria-label="Cerrar popup de inicio de sesión"
+            data-auth-close
+        >
+            &times;
+        </button>
+        {# Contenido del modal de acceso #}
+        <div class="clubs-auth-modal__content">
+            <p class="eyebrow">Acceso UAX</p>
+            <h2>Inicia sesión para unirte</h2>
+            <p class="clubs-auth-modal__intro">
+                Accede con tus credenciales para unirte a <strong data-auth-club-name>este club</strong>.
+            </p>
+
+            {# Formulario de acceso rápido #}
+            <form
+                method="post"
+                action="{% url 'accounts:modal_login' %}"
+                class="clubs-auth-form"
+                data-auth-form
+            >
+                {% csrf_token %}
+                <div class="clubs-auth-form__field">
+                    <label for="clubs-auth-username">Usuario</label>
+                    <input
+                        id="clubs-auth-username"
+                        type="text"
+                        name="username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+                <div class="clubs-auth-form__field">
+                    <label for="clubs-auth-password">Contraseña</label>
+                    <input
+                        id="clubs-auth-password"
+                        type="password"
+                        name="password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+                <div class="clubs-auth-form__errors" data-auth-errors hidden></div>
+                <button type="submit" class="club-chip-button clubs-auth-form__submit">
+                    Iniciar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

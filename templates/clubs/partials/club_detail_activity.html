@@ -1,0 +1,291 @@
+        {% if is_member or can_manage %}
+        {# Bloque de eventos #}
+        <article class="club-detail-card club-detail-card--wide club-detail-card--events" id="eventos" data-equal-height-panel="events-members">
+            <div class="club-detail-card__header club-detail-card__header--inline">
+                <div>
+                    <p class="eyebrow">Eventos</p>
+                    <h2>Actividades del club</h2>
+                </div>
+                <div class="club-event-header-chips">
+                    <span class="club-events-total">
+                        {{ events_total }} evento{% if events_total != 1 %}s{% endif %}
+                    </span>
+                    <button type="button" class="club-events-active-total" data-event-active-filter-toggle aria-pressed="false">
+                        {{ active_events_total }} activo{% if active_events_total != 1 %}s{% endif %}
+                    </button>
+                    {% if can_manage %}
+                    <button type="button" class="club-create-news-button" data-create-event-toggle>
+                        Crear evento
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% if can_manage %}
+            {# Modal de creación de eventos #}
+            <div class="club-create-news-modal club-create-event-modal" data-create-event-panel hidden>
+                <div class="club-create-news-modal__backdrop" data-create-event-close></div>
+                <div class="club-create-news-modal__dialog club-create-event-modal__dialog" role="dialog" aria-modal="true" aria-label="Crear evento">
+                    <button type="button" class="club-event-card__edit-close" aria-label="Cerrar crear evento" data-create-event-close>&times;</button>
+                <form action="{% url 'clubs:create_event' club.slug %}" method="post" class="club-event-create-form" data-event-form>
+                    {% csrf_token %}
+                    <h2>Crear evento</h2>
+                    {{ event_form.as_p }}
+                    <button type="submit" class="club-chip-button">Crear evento</button>
+                </form>
+                </div>
+            </div>
+            {% endif %}
+            {# Galería de eventos del club #}
+            <div class="club-event-gallery" data-event-gallery>
+            <div class="club-event-grid{% if can_manage %} club-event-grid--management{% endif %}">
+                {% for event in events %}
+                {# Tarjeta de un evento #}
+                <article class="club-event-card" data-event-card data-event-id="{{ event.id }}" data-event-active-status="{% if event.is_active_status %}true{% else %}false{% endif %}" data-event-join-url="{% url 'clubs:join_event' club.slug event.id %}">
+                    {% if can_manage %}
+                    <button type="button" class="club-event-card__edit" aria-label="Editar evento {{ event.title }}" title="Editar evento" data-event-edit-toggle aria-controls="event-edit-modal-{{ event.id }}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M4 17.25V21h3.75L18.8 9.95l-3.75-3.75L4 17.25Zm16.7-10.2a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"></path>
+                        </svg>
+                        <span>Editar</span>
+                    </button>
+                    <div id="event-edit-modal-{{ event.id }}" class="club-create-news-modal club-event-edit-modal" data-event-edit-panel hidden>
+                        <div class="club-create-news-modal__backdrop" data-event-edit-close></div>
+                        <div class="club-create-news-modal__dialog club-event-edit-modal__dialog" role="dialog" aria-modal="true" aria-label="Editar evento {{ event.title }}">
+                        <button type="button" class="club-event-card__edit-close" aria-label="Cerrar editor de evento" data-event-edit-close>&times;</button>
+                        <form action="{% url 'clubs:update_event' club.slug event.id %}" method="post" class="club-event-card__edit-body club-event-edit-modal__body" data-event-form>
+                            {% csrf_token %}
+                            <p>
+                                <label for="event-title-{{ event.id }}">Título</label>
+                                <input id="event-title-{{ event.id }}" type="text" name="title" value="{{ event.title }}" maxlength="150" required>
+                            </p>
+                                <p>
+                                    <label for="event-description-{{ event.id }}">Descripción</label>
+                                    <textarea id="event-description-{{ event.id }}" name="description" rows="3" maxlength="500">{{ event.description }}</textarea>
+                                    <span class="helptext">Máximo 500 caracteres.</span>
+                                </p>
+                            <p>
+                                <label for="event-start-{{ event.id }}">Fecha y hora de inicio</label>
+                                <input id="event-start-{{ event.id }}" type="datetime-local" name="start_datetime" value="{{ event.start_datetime|date:'Y-m-d\\TH:i' }}" class="datetime-smart-input" data-datetime-smart="true" data-required="true" required>
+                            </p>
+                            <p>
+                                <label for="event-end-{{ event.id }}">Fecha y hora de fin</label>
+                                <input id="event-end-{{ event.id }}" type="datetime-local" name="end_datetime" value="{{ event.end_datetime|date:'Y-m-d\\TH:i' }}" class="datetime-smart-input" data-datetime-smart="true">
+                            </p>
+                            <p>
+                                <label for="event-capacity-{{ event.id }}">Aforo</label>
+                                <input id="event-capacity-{{ event.id }}" type="number" name="capacity" value="{{ event.capacity }}" min="1" required>
+                            </p>
+                            <p>
+                                <label for="event-location-{{ event.id }}">Ubicación</label>
+                                <input id="event-location-{{ event.id }}" type="text" name="location" value="{{ event.location }}" maxlength="150">
+                            </p>
+                            <p>
+                                <label for="event-location-url-{{ event.id }}">Enlace de ubicacion</label>
+                                <input id="event-location-url-{{ event.id }}" type="url" name="location_url" value="{{ event.location_url }}" placeholder="https://maps.google.com/...">
+                                <span class="helptext">Opcional. Pega aqui un enlace a Maps o a otra ubicacion.</span>
+                            </p>
+                            <button type="submit" class="club-chip-button">Guardar cambios</button>
+                        </form>
+                        </div>
+                    </div>
+                    <form action="{% url 'clubs:delete_event' club.slug event.id %}" method="post" class="club-event-card__delete-form" data-delete-event-form data-event-title="{{ event.title }}">
+                        {% csrf_token %}
+                        <button type="submit" class="club-event-card__delete" aria-label="Eliminar evento {{ event.title }}" title="Eliminar evento">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM7 9h2l1 11h4l1-11h2l-1.2 13H8.2L7 9Z"></path>
+                            </svg>
+                            <span>Eliminar</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <div class="club-event-card__header">
+                        <h3>
+                            <span class="club-event-card__title" tabindex="0" data-tooltip="{{ event.title }}">
+                                <span class="club-event-card__title-text">{{ event.title }}</span>
+                            </span>
+                        </h3>
+                    </div>
+                    <p class="club-event-card__description">{{ event.description|default:"Sin descripción." }}</p>
+                    <p
+                        class="club-event-card__countdown{% if not event.is_active_status %} club-event-card__countdown--placeholder{% endif %}"
+                        {% if event.is_active_status %}
+                        data-event-countdown
+                        data-event-start-at="{{ event.start_datetime|date:'c' }}"
+                        {% endif %}
+                        aria-hidden="{% if event.is_active_status %}false{% else %}true{% endif %}"
+                    >
+                        <span class="club-event-card__countdown-label">Empieza en</span>
+                        <span class="club-event-card__countdown-value">{% if event.is_active_status %}--{% else %}&nbsp;{% endif %}</span>
+                        <span class="club-event-card__countdown-alert" hidden>¡EMPIEZA YA!</span>
+                    </p>
+                    <p class="club-event-card__meta-row club-event-card__datetime-row">
+                        <strong>Inicio</strong>
+                        <span class="club-event-card__date">{{ event.start_datetime|date:"l d/m/Y"|capfirst }}</span>
+                        <span class="club-event-card__time">{{ event.start_datetime|date:"H:i" }}h</span>
+                    </p>
+                    <p class="club-event-card__meta-row club-event-card__datetime-row">
+                    {% if event.end_datetime %}
+                        <strong>Fin</strong>
+                        <span class="club-event-card__date">{{ event.end_datetime|date:"l d/m/Y"|capfirst }}</span>
+                        <span class="club-event-card__time">{{ event.end_datetime|date:"H:i" }}h</span>
+                    {% endif %}
+                    </p>
+                    <p class="club-event-card__meta-row">
+                        <strong>Lugar:</strong>
+                        <span class="club-event-card__place-group">
+                            <span class="club-event-card__place" tabindex="0" data-tooltip="{{ event.location|default:'Por definir' }}">
+                                {{ event.location|default:"Por definir" }}
+                            </span>
+                            {% if event.location_url %}
+                            <a href="{{ event.location_url }}" class="club-event-card__location-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir ubicacion de {{ event.title }}" title="Abrir ubicacion">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M12 2.75a7 7 0 0 1 7 7c0 4.61-5.35 10.17-6.41 11.23a.85.85 0 0 1-1.18 0C10.35 19.92 5 14.36 5 9.75a7 7 0 0 1 7-7Zm0 4.25a2.75 2.75 0 1 0 0 5.5a2.75 2.75 0 0 0 0-5.5Z" fill="currentColor"></path>
+                                </svg>
+                            </a>
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p class="club-event-card__meta-row">
+                        <strong>Participantes:</strong>
+                        <span data-event-attendees-count>{{ event.attendees_total }}</span> de <strong>{% if event.capacity %}{{ event.capacity }}{% else %}Sin limite{% endif %}</strong>
+                    </p>
+                    <ol class="club-event-attendees" data-event-attendees-list>
+                        {% for attendance in event.display_attendances %}
+                        <li data-event-attendance-row data-attendance-id="{{ attendance.id }}">
+                            <span>{{ attendance.user.display_name }}{% if attendance.companions_count %} (+{{ attendance.companions_count }}){% endif %}</span>
+                            {% if can_manage or event.is_active_status and attendance.user_id == request.user.id %}
+                            <form action="{% url 'clubs:delete_event_attendance' club.slug event.id attendance.id %}" method="post" data-event-leave-form data-attendance-id="{{ attendance.id }}" data-own-attendance="{% if attendance.user_id == request.user.id %}true{% else %}false{% endif %}">
+                                {% csrf_token %}
+                                <button type="submit" class="club-resource-card__delete club-event-attendees__delete" aria-label="Eliminar asistencia de {{ attendance.user.display_name }}" title="Eliminar asistencia">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM7 9h2l1 11h4l1-11h2l-1.2 13H8.2L7 9Z"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </li>
+                        {% empty %}
+                        <li>Aún no hay participantes.</li>
+                        {% endfor %}
+                    </ol>
+                    <div class="club-event-card__actions-row">
+                        {% if event.is_active_status and event.id in event_attendance_ids %}
+                        <button type="button" class="club-event-card__joined club-event-card__action" data-event-edit-attendance-open data-event-title="{{ event.title }}" data-update-url="{% url 'clubs:update_event_attendance' club.slug event.id event.current_user_attendance.id %}" data-companions-count="{{ event.current_user_attendance.companions_count|default:0 }}">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M4 17.25V21h3.75L18.8 9.95l-3.75-3.75L4 17.25Zm16.7-10.2a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"></path>
+                            </svg>
+                            <span>Modificar</span>
+                        </button>
+                        {% if event.current_user_attendance %}
+                        <form action="{% url 'clubs:delete_event_attendance' club.slug event.id event.current_user_attendance.id %}" method="post" class="club-event-card__leave-action-form" data-event-leave-form data-attendance-id="{{ event.current_user_attendance.id }}" data-own-attendance="true">
+                            {% csrf_token %}
+                            <button type="submit" class="club-event-card__leave-action" aria-label="Desapuntarse del evento" title="Desapuntarse">
+                                &times;
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% elif event.is_active_status %}
+                        <form action="{% url 'clubs:join_event' club.slug event.id %}" method="post" class="club-event-card__action-form" data-event-join-form>
+                            {% csrf_token %}
+                            <button type="submit" class="club-chip-button club-event-card__action">Apuntarse</button>
+                        </form>
+                        {% endif %}
+                        <span class="club-event-card__status {% if event.is_active_status %}club-event-card__status--active{% else %}club-event-card__status--past{% endif %}">
+                            {{ event.status_label }}
+                        </span>
+                    </div>
+                </article>
+                {% empty %}
+                <p class="club-empty-inline">Todavía no hay eventos creados.</p>
+                {% endfor %}
+            </div>
+            <div class="club-event-pagination" data-event-pagination>
+                <button type="button" class="club-event-pagination__button" data-event-prev aria-label="Ver eventos anteriores">
+                    &larr;
+                </button>
+                <span data-event-page>1 / 1</span>
+                <button type="button" class="club-event-pagination__button" data-event-next aria-label="Ver eventos siguientes">
+                    &rarr;
+                </button>
+            </div>
+            </div>
+        </article>
+        {% endif %}
+
+        {% if is_member or can_manage %}
+        {# Bloque de miembros #}
+        <article class="club-detail-card club-detail-card--members" id="miembros" data-equal-height-panel="events-members">
+            <div class="club-detail-card__header club-detail-card__header--inline">
+                <div>
+                    <p class="eyebrow">Miembros</p>
+                    <h2>Listado</h2>
+                </div>
+                <span class="club-members-total">
+                    {{ members_total }} miembro{% if members_total != 1 %}s{% endif %}
+                </span>
+            </div>
+            {# Herramientas de búsqueda y orden #}
+            <div class="club-member-tools">
+                <label class="club-member-search">
+                    <span class="sr-only">Buscar miembros</span>
+                    <input type="search" placeholder="Buscar miembro..." aria-label="Buscar miembros del club" data-member-search>
+                </label>
+                <label class="club-member-sort">
+                    <span class="sr-only">Ordenar miembros</span>
+                    <span class="club-member-sort__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                            <path d="M7 3 3 7h3v11h2V7h3L7 3Zm10 18 4-4h-3V6h-2v11h-3l4 4Z"></path>
+                        </svg>
+                    </span>
+                    <select aria-label="Ordenar miembros" data-member-sort>
+                        <option value="joined">Antigüedad</option>
+                        <option value="name">Nombre</option>
+                        <option value="role">Rol</option>
+                    </select>
+                </label>
+            </div>
+            {# Ranking y listado de miembros #}
+            <div class="club-member-ranking" data-member-ranking>
+                {% for membership in members %}
+                <div class="club-member-row" data-member-row data-member-search-text="{{ membership.user.display_name }} {{ membership.get_role_in_club_display }}" data-member-name="{{ membership.user.display_name }}" data-member-role="{{ membership.get_role_in_club_display }}" data-member-joined-order="{{ forloop.counter }}">
+                    <span class="club-member-row__position">{{ forloop.counter }}</span>
+                    <div>
+                        <strong>{{ membership.user.display_name }}</strong>
+                        <p>{{ membership.get_role_in_club_display }} · {{ membership.tenure_label }}</p>
+                    </div>
+                    {% if membership.can_update_role %}
+                    <form action="{% url 'clubs:update_member_role' club.slug membership.id %}" method="post" class="club-member-role-form">
+                        {% csrf_token %}
+                        <label class="sr-only" for="member-role-{{ membership.id }}">Rol de {{ membership.user.display_name }}</label>
+                        <select id="member-role-{{ membership.id }}" name="role_in_club">
+                            {% for role_value, role_label in membership.editable_role_choices %}
+                            <option value="{{ role_value }}" {% if role_value == membership.role_in_club %}selected{% endif %}>
+                                {{ role_label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="club-chip-button club-member-role-form__button">Guardar</button>
+                    </form>
+                    {% endif %}
+                    {% if membership.can_remove_member %}
+                    <button
+                        type="button"
+                        class="club-member-row__remove"
+                        aria-label="Eliminar a {{ membership.user.display_name }} del club"
+                        title="Eliminar miembro"
+                        data-remove-member-open
+                        data-remove-member-name="{{ membership.user.display_name }}"
+                        data-remove-member-action="{% url 'clubs:remove_member' club.slug membership.id %}"
+                    >
+                        &times;
+                    </button>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p>No hay miembros activos todavia.</p>
+                {% endfor %}
+            </div>
+            <p class="club-empty-inline club-member-search__empty" data-member-search-empty hidden>No se han encontrado miembros.</p>
+        </article>
+        {% endif %}
+

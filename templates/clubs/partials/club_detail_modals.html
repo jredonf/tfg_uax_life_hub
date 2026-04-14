@@ -1,0 +1,107 @@
+{% if is_member %}
+{# Modal para darse de baja del club #}
+<div class="leave-club-modal" data-leave-modal hidden>
+    <div class="leave-club-modal__backdrop" data-leave-close></div>
+    <div class="leave-club-modal__dialog" role="dialog" aria-modal="true" aria-label="Confirmar baja del club">
+        <h2>Confirmar baja</h2>
+        <p>¿Seguro que quieres darte de baja de {{ club.name }}?</p>
+        <div class="leave-club-modal__actions">
+            <button type="button" class="club-chip-button" data-leave-close>Cancelar</button>
+            <form action="{% url 'clubs:leave' club.slug %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger-soft">Darme de baja</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if can_manage %}
+{# Modal de confirmación para eliminar eventos #}
+<div class="leave-club-modal" data-delete-event-modal hidden>
+    <div class="leave-club-modal__backdrop" data-delete-event-close></div>
+    <div class="leave-club-modal__dialog" role="dialog" aria-modal="true" aria-label="Confirmar eliminación del evento">
+        <h2>Eliminar evento</h2>
+        <p>¿Seguro que quieres eliminar <strong data-delete-event-name>este evento</strong>? Esta acción no se puede deshacer.</p>
+        <div class="leave-club-modal__actions">
+            <button type="button" class="club-chip-button" data-delete-event-close>Cancelar</button>
+            <button type="button" class="btn-danger-soft" data-delete-event-confirm>Eliminar evento</button>
+        </div>
+    </div>
+</div>
+
+{# Modal de confirmación para eliminar noticias #}
+<div class="leave-club-modal" data-delete-post-modal hidden>
+    <div class="leave-club-modal__backdrop" data-delete-post-close></div>
+    <div class="leave-club-modal__dialog" role="dialog" aria-modal="true" aria-label="Confirmar eliminación de la noticia">
+        <h2>Eliminar noticia</h2>
+        <p>¿Seguro que quieres eliminar <strong data-delete-post-name>esta noticia</strong>? Esta acción no se puede deshacer.</p>
+        <div class="leave-club-modal__actions">
+            <button type="button" class="club-chip-button" data-delete-post-close>Cancelar</button>
+            <button type="button" class="btn-danger-soft" data-delete-post-confirm>Eliminar noticia</button>
+        </div>
+    </div>
+</div>
+
+{# Modal para eliminar miembros del club #}
+<div class="leave-club-modal" data-remove-member-modal hidden>
+    <div class="leave-club-modal__backdrop" data-remove-member-close></div>
+    <div class="leave-club-modal__dialog" role="dialog" aria-modal="true" aria-label="Confirmar eliminación del miembro">
+        <h2>Eliminar miembro</h2>
+        <p>¿Seguro que quieres eliminar a <strong data-remove-member-target-name>este miembro</strong> del club?</p>
+        <form method="post" class="club-remove-member-form" data-remove-member-form>
+            {% csrf_token %}
+            <label for="remove-member-reason">Causa de eliminación</label>
+            <select id="remove-member-reason" name="removal_reason" required data-remove-member-reason>
+                <option value="" selected>Seleccionar causa</option>
+                {% for reason_value, reason_label in membership_removal_reason_choices %}
+                <option value="{{ reason_value }}">{{ reason_label }}</option>
+                {% endfor %}
+            </select>
+            <div class="club-remove-member-form__other" data-remove-member-other hidden>
+                <label for="remove-member-other">Motivo</label>
+                <input id="remove-member-other" type="text" name="removal_reason_other" maxlength="100" placeholder="Máx. 100 caracteres" data-remove-member-other-input>
+            </div>
+            <div class="leave-club-modal__actions">
+                <button type="button" class="club-chip-button" data-remove-member-close>Cancelar</button>
+                <button type="submit" class="btn-danger-soft">Eliminar miembro</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{# Modal para apuntarse a un evento #}
+<div class="leave-club-modal" data-join-event-modal hidden>
+    <div class="leave-club-modal__backdrop" data-join-event-close></div>
+    <div class="leave-club-modal__dialog" role="dialog" aria-modal="true" aria-label="Confirmar inscripción al evento">
+        <h2 data-join-event-heading>Confirmar inscripción</h2>
+        <p data-join-event-message>¿Quieres apuntarte a <strong data-join-event-name>este evento</strong>?</p>
+        <div class="club-join-event-modal__companions">
+            <label for="join-event-companions">Llevo acompañantes</label>
+            <div class="club-join-event-modal__stepper">
+                <button type="button" class="club-join-event-modal__stepper-button" data-join-event-minus aria-label="Reducir acompañantes">-</button>
+                <input id="join-event-companions" type="number" min="0" max="10" step="1" value="0" data-join-event-companions>
+                <button type="button" class="club-join-event-modal__stepper-button" data-join-event-plus aria-label="Aumentar acompañantes">+</button>
+            </div>
+            <small>Máximo 10 acompañantes.</small>
+        </div>
+        <div class="leave-club-modal__actions">
+            <button type="button" class="btn-danger-soft" data-join-event-close>Cancelar</button>
+            <button type="button" class="club-chip-button" data-join-event-confirm>Confirmar</button>
+        </div>
+    </div>
+</div>
+
+{# Modal para desapuntarse de un evento #}
+<div class="leave-club-modal" data-leave-event-modal hidden>
+    <div class="leave-club-modal__backdrop" data-leave-event-close></div>
+    <div class="leave-club-modal__dialog" role="dialog" aria-modal="true" aria-label="Confirmar baja del evento">
+        <h2>Desapuntarse del evento</h2>
+        <p>¿Seguro que quieres desapuntarte de <strong data-leave-event-name>este evento</strong>?</p>
+        <div class="leave-club-modal__actions">
+            <button type="button" class="club-chip-button" data-leave-event-close>Atrás</button>
+            <button type="button" class="btn-danger-soft" data-leave-event-confirm>Desapuntarse</button>
+        </div>
+    </div>
+</div>

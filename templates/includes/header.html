@@ -1,0 +1,21 @@
+{# Cabecera principal #}
+<header class="header">
+    <div class="container nav">
+        {% include 'includes/partials/header_brand.html' %}
+        {# Navegación y acciones de sesión #}
+        <div class="nav-actions">
+            {% include 'includes/partials/header_nav.html' %}
+            {% include 'includes/partials/header_account.html' %}
+            {# Botón hamburguesa para móvil #}
+            <button
+                class="menu-toggle"
+                type="button"
+                aria-label="Abrir menú"
+                aria-controls="site-menu"
+                aria-expanded="false"
+            >
+                &#9776;
+            </button>
+        </div>
+    </div>
+</header>

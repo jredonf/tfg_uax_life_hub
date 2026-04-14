@@ -1,0 +1,63 @@
+{% if not request.user.is_authenticated %}
+{# Modal global de inicio de sesión #}
+<div class="clubs-auth-modal" data-global-login-modal hidden>
+    <div class="clubs-auth-modal__backdrop" data-global-login-close></div>
+    <div
+        class="clubs-auth-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Iniciar sesión"
+    >
+        <button
+            type="button"
+            class="clubs-auth-modal__close"
+            aria-label="Cerrar popup de inicio de sesión"
+            data-global-login-close
+        >
+            &times;
+        </button>
+        {# Contenido del modal de acceso #}
+        <div class="clubs-auth-modal__content">
+            <p class="eyebrow">Acceso UAX</p>
+            <h2>Iniciar sesión</h2>
+            <p class="clubs-auth-modal__intro">
+                Accede con tus credenciales para continuar en UAX Life Hub.
+            </p>
+
+            {# Formulario de acceso rápido #}
+            <form
+                method="post"
+                action="{% url 'accounts:modal_login' %}"
+                class="clubs-auth-form"
+                data-global-login-form
+            >
+                {% csrf_token %}
+                <div class="clubs-auth-form__field">
+                    <label for="global-login-username">Usuario</label>
+                    <input
+                        id="global-login-username"
+                        type="text"
+                        name="username"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+                <div class="clubs-auth-form__field">
+                    <label for="global-login-password">Contraseña</label>
+                    <input
+                        id="global-login-password"
+                        type="password"
+                        name="password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+                <div class="clubs-auth-form__errors" data-global-login-errors hidden></div>
+                <button type="submit" class="club-chip-button clubs-auth-form__submit">
+                    Iniciar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}

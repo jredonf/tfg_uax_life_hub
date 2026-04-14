@@ -1,0 +1,30 @@
+{# Tarjeta principal de acceso #}
+<div class="container auth-card">
+    <p class="eyebrow">Acceso UAX Life</p>
+    <h1>Iniciar sesión</h1>
+    <p class="auth-card__intro">Accede con tus credenciales para continuar en la plataforma universitaria.</p>
+    {# Formulario de inicio de sesión #}
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="auth-form__errors">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="auth-form__field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+            <p class="auth-form__error">{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary auth-form__submit">Entrar</button>
+    </form>
+</div>

@@ -1,0 +1,248 @@
+{% load rich_text %}
+
+        {% if is_member or can_manage %}
+        {# Bloque de noticias #}
+        <article class="club-detail-card club-detail-card--wide" id="noticias">
+            <div class="club-detail-card__header">
+                <div>
+                    <p class="eyebrow">Noticias</p>
+                    <h2>Actualidad del club</h2>
+                </div>
+                {% if can_manage %}
+                <button type="button" class="club-create-news-button" data-create-news-toggle>
+                    Crear noticia
+                </button>
+                {% endif %}
+            </div>
+            {% if can_manage %}
+            {# Modal de creación de noticias #}
+            <div class="club-create-news-modal" data-create-news-panel hidden>
+                <div class="club-create-news-modal__backdrop" data-create-news-close></div>
+                <div class="club-create-news-modal__dialog" role="dialog" aria-modal="true" aria-label="Crear noticia">
+                    <button type="button" class="club-event-card__edit-close" aria-label="Cerrar crear noticia" data-create-news-close>&times;</button>
+                    <form action="{% url 'clubs:create_post' club.slug %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <h2>Crear noticia</h2>
+                        {{ post_form.as_p }}
+                        <button type="submit" class="club-chip-button">Publicar</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            <div class="club-news-gallery" data-news-gallery>
+            {% if can_manage %}
+            {# Acciones de gestión de noticias #}
+            <div class="club-news-management">
+                {% for post in posts %}
+                <div class="club-post__management-actions" data-news-management-card hidden>
+                    <button type="button" class="club-event-card__edit club-post__edit-button" aria-label="Editar noticia {{ post.title }}" title="Editar noticia" data-post-edit-toggle aria-controls="post-edit-modal-{{ post.id }}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M4 17.25V21h3.75L18.8 9.95l-3.75-3.75L4 17.25Zm16.7-10.2a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"></path>
+                        </svg>
+                        <span>Editar</span>
+                    </button>
+                    <form action="{% url 'clubs:delete_post' club.slug post.id %}" method="post" class="club-event-card__delete-form club-post__delete-form" data-delete-post-form data-post-title="{{ post.title }}">
+                        {% csrf_token %}
+                        <button type="submit" class="club-event-card__delete" aria-label="Eliminar noticia {{ post.title }}" title="Eliminar noticia">
+                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM7 9h2l1 11h4l1-11h2l-1.2 13H8.2L7 9Z"></path>
+                            </svg>
+                            <span>Eliminar</span>
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {# Feed de noticias del club #}
+            <div class="club-feed">
+                {% for post in posts %}
+                {# Tarjeta de una noticia #}
+                <article class="club-post" id="post-{{ post.id }}" data-news-card>
+                    {% if can_manage %}
+                    <div id="post-edit-modal-{{ post.id }}" class="club-create-news-modal club-post-edit-modal" data-post-edit-panel hidden>
+                        <div class="club-create-news-modal__backdrop" data-post-edit-close></div>
+                        <div class="club-create-news-modal__dialog club-post-edit-modal__dialog" role="dialog" aria-modal="true" aria-label="Editar noticia {{ post.title }}">
+                            <button type="button" class="club-event-card__edit-close" aria-label="Cerrar editor de noticia" data-post-edit-close>&times;</button>
+                            <form action="{% url 'clubs:update_post' club.slug post.id %}" method="post" enctype="multipart/form-data" class="club-event-card__edit-body club-post__edit-body">
+                                {% csrf_token %}
+                                <h2>Editar noticia</h2>
+                                <p>
+                                    <label>Título</label>
+                                    <input type="text" name="title" value="{{ post.title }}" maxlength="150" required>
+                                    <span class="helptext">Máximo 150 caracteres.</span>
+                                </p>
+                                <p>
+                                    <label>Texto</label>
+                                    <textarea name="body" data-rich-editor="true">{{ post.body }}</textarea>
+                                </p>
+                                <p>
+                                    <label>Imagen</label>
+                                    <input type="file" name="image">
+                                </p>
+                                <button type="submit" class="club-chip-button">Guardar noticia</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="club-post__scroll">
+                    <div class="club-post__header">
+                        <div>
+                            <h3>{{ post.title }}</h3>
+                            <p>{{ post.author }} · {{ post.created_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="club-post__image">
+                    {% endif %}
+                    <div class="rich-text-content">{{ post.body|rich_text }}</div>
+                    <div class="club-post__actions">
+                        <form action="{% url 'clubs:like_post' club.slug post.id %}#post-{{ post.id }}" method="post" data-like-form>
+                            {% csrf_token %}
+                            <button type="submit" class="club-chip-button" data-like-button>
+                                {% if post.id in liked_post_ids %}Quitar like{% else %}Like{% endif %}
+                                · {{ post.likes_total }}
+                            </button>
+                        </form>
+                        <span data-comments-count>{{ post.comments_total }} comentario{% if post.comments_total != 1 %}s{% endif %}</span>
+                    </div>
+                    <div class="club-comments">
+                        <div class="club-comments__list" data-comments-list>
+                        {% for comment in post.comments.all %}
+                        <div class="club-comment-row" data-comment-row>
+                            <p><strong>{{ comment.author }}:</strong> {{ comment.body }}</p>
+                            {% if comment.author_id == request.user.id or can_manage %}
+                            <form action="{% url 'clubs:delete_comment' club.slug post.id comment.id %}" method="post" data-delete-comment-form>
+                                {% csrf_token %}
+                                <button type="submit" class="club-resource-card__delete club-comment-row__delete" aria-label="Eliminar comentario" title="Eliminar comentario">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM7 9h2l1 11h4l1-11h2l-1.2 13H8.2L7 9Z"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        </div>
+                        <form action="{% url 'clubs:comment_post' club.slug post.id %}#post-{{ post.id }}" method="post" class="club-comment-form" data-comment-form>
+                            {% csrf_token %}
+                            {{ comment_form.body }}
+                            <small class="club-comment-form__limit">Máx. 500 caracteres</small>
+                            <button type="submit" class="club-chip-button">Comentar</button>
+                        </form>
+                    </div>
+                    </div>
+                </article>
+                {% empty %}
+                <p class="club-empty-inline">Todavía no hay noticias publicadas.</p>
+                {% endfor %}
+            </div>
+            <div class="club-news-pagination" data-news-pagination>
+                <button type="button" class="club-news-pagination__button" data-news-prev aria-label="Ver noticias anteriores">
+                    &larr;
+                </button>
+                <span data-news-page>1 / 1</span>
+                <button type="button" class="club-news-pagination__button" data-news-next aria-label="Ver noticias siguientes">
+                    &rarr;
+                </button>
+            </div>
+            </div>
+        </article>
+        {% endif %}
+
+        {% if is_member or can_manage %}
+        {# Bloque de recursos #}
+        <article class="club-detail-card club-detail-card--wide">
+            <div class="club-detail-card__header club-detail-card__header--inline">
+                <div>
+                    <p class="eyebrow">Galería y recursos</p>
+                    <h2>Material del club</h2>
+                </div>
+                <button type="button" class="club-create-news-button" data-upload-resource-toggle>
+                    Subir recurso
+                </button>
+            </div>
+            {# Modal de subida de recursos #}
+            <div class="club-create-news-modal club-upload-resource-modal" data-upload-resource-panel hidden>
+                <div class="club-create-news-modal__backdrop" data-upload-resource-close></div>
+                <div class="club-create-news-modal__dialog club-upload-resource-modal__dialog" role="dialog" aria-modal="true" aria-label="Subir recurso">
+                    <button type="button" class="club-event-card__edit-close" aria-label="Cerrar subida de recurso" data-upload-resource-close>&times;</button>
+                <form action="{% url 'clubs:upload_resource' club.slug %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>Subir recurso</h2>
+                    {{ resource_form.as_p }}
+                    <button type="submit" class="club-chip-button">Subir archivo</button>
+                </form>
+                </div>
+            </div>
+            {# Galería de recursos del club #}
+            <div class="club-resource-gallery" data-resource-gallery>
+            <div class="club-resource-grid">
+                {% for resource in resources %}
+                <article class="club-resource-card" data-resource-card>
+                    <a href="{{ resource.file.url }}" class="club-resource-card__preview" target="_blank" rel="noopener" aria-label="Abrir {{ resource.title }}">
+                        {% if resource.is_image %}
+                        <img src="{{ resource.file.url }}" alt="{{ resource.title }}">
+                        {% else %}
+                        <div class="club-resource-card__file-preview">
+                            <span>Archivo</span>
+                        </div>
+                        {% endif %}
+                    </a>
+                    <div class="club-resource-card__content">
+                        <a href="{{ resource.file.url }}" class="club-resource-card__title" target="_blank" rel="noopener" data-tooltip="{{ resource.title }}">
+                            {{ resource.title }}
+                        </a>
+                        <span class="club-resource-card__description" data-tooltip="{{ resource.description|default:'Recurso compartido' }}">
+                            {{ resource.description|default:"Recurso compartido" }}
+                        </span>
+                        <div class="club-resource-card__meta">
+                            <small>Subido por {{ resource.uploaded_by.display_name }}</small>
+                            {% if resource.uploaded_by_id == request.user.id or can_manage %}
+                            <form action="{% url 'clubs:delete_resource' club.slug resource.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="club-resource-card__delete" aria-label="Eliminar {{ resource.title }}" title="Eliminar recurso">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                        <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v9h-2V9Zm4 0h2v9h-2V9ZM7 9h2l1 11h4l1-11h2l-1.2 13H8.2L7 9Z"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                {% empty %}
+                <p class="club-empty-inline">Todavía no hay recursos publicados.</p>
+                {% endfor %}
+            </div>
+            <div class="club-resource-pagination" data-resource-pagination>
+                <button type="button" class="club-resource-pagination__button" data-resource-prev aria-label="Ver recursos anteriores">
+                    &larr;
+                </button>
+                <span data-resource-page>1 / 1</span>
+                <button type="button" class="club-resource-pagination__button" data-resource-next aria-label="Ver recursos siguientes">
+                    &rarr;
+                </button>
+            </div>
+            </div>
+        </article>
+        {% endif %}
+
+        {% if can_manage %}
+        {# Panel de gestión rápida #}
+        <article class="club-detail-card club-detail-card--wide club-management-panel">
+            <p class="eyebrow">Panel de gestión</p>
+            <h2>Accesos rápidos</h2>
+            <div class="club-management-panel__grid">
+                <button type="button" data-management-trigger="[data-edit-general-toggle]">Editar ficha general</button>
+                <button type="button" data-management-trigger="[data-edit-contact-toggle]">Editar contacto</button>
+                <button type="button" data-management-trigger="[data-create-poll-toggle]">Crear encuesta</button>
+                <button type="button" data-management-trigger="[data-create-event-toggle]">Crear eventos</button>
+                <button type="button" data-management-trigger="[data-create-news-toggle]">Crear noticias</button>
+                <button type="button" data-management-trigger="[data-upload-resource-toggle]">Subir recurso</button>
+                <a href="/admin/clubs/club/{{ club.id }}/change/">Abrir en admin</a>
+            </div>
+        </article>
+        {% endif %}
+    </div>
+</section>

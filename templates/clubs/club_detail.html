@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load rich_text %}
+
+{% block title %}{{ club.name }} | UAX Life Hub{% endblock %}
+
+{% block content %}
+{# Cabecera visual y acceso principal al club #}
+{% include 'clubs/partials/club_detail_hero.html' %}
+
+{# Secciones principales del detalle del club #}
+{% include 'clubs/partials/club_detail_primary.html' %}
+
+{# Actividad del club: eventos y miembros #}
+{% include 'clubs/partials/club_detail_activity.html' %}
+
+{# Contenido social y recursos compartidos #}
+{% include 'clubs/partials/club_detail_content.html' %}
+
+{# Modales operativos de la vista #}
+{% include 'clubs/partials/club_detail_modals.html' %}
+{% endblock %}
+
+{% block extra_js %}
+{# Comportamiento interactivo de la vista de detalle #}
+{% include 'clubs/partials/club_detail_scripts.html' %}
+{% endblock %}

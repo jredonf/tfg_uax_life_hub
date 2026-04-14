@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Clubes y asociaciones | UAX Life Hub{% endblock %}
+
+{% block content %}
+<section class="page-section clubs-hub">
+    <div class="container">
+        {# Cabecera del hub de clubes #}
+        <div class="clubs-hub__hero">
+            <p class="eyebrow">Clubes y asociaciones</p>
+            <h1>Explora los clubes y asociaciones de UAX Life</h1>
+            <p class="clubs-hub__intro">
+                Descubre nuestros clubes y asociaciones y forma parte de una comunidad donde compartir aficiones,
+                descubrir nuevas pasiones y crear recuerdos inolvidables. Comparte tu pasión: en nuestros más de 35
+                clubes y asociaciones encontrarás un espacio para expresarte, conectar y enriquecer tu experiencia
+                universitaria.
+            </p>
+        </div>
+
+        {% if categories %}
+        {% include 'clubs/partials/club_list_category_cards.html' %}
+        {% include 'clubs/partials/club_list_explorer_modal.html' %}
+        {% include 'clubs/partials/club_list_auth_modal.html' %}
+        {% else %}
+        {% include 'clubs/partials/club_list_empty_state.html' %}
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{# Interacciones del explorador de clubes #}
+<script src="{% static 'js/clubs/category-modal.js' %}"></script>
+{% endblock %}

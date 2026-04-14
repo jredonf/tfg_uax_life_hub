@@ -1,0 +1,109 @@
+{# Modal de exploración de clubes por categoría #}
+<div class="clubs-modal" data-clubs-modal hidden>
+    <div class="clubs-modal__backdrop" data-modal-close></div>
+    <div
+        class="clubs-modal__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Clubes por categoría"
+    >
+        <div class="clubs-modal__scroll-area">
+            {# Barra superior del modal #}
+            <div class="clubs-modal__toolbar">
+                <button
+                    type="button"
+                    class="clubs-modal__close"
+                    aria-label="Cerrar modal"
+                    data-modal-close
+                >
+                    &times;
+                </button>
+            </div>
+
+            {% for category in categories %}
+            {# Panel de una categoría dentro del modal #}
+            <section
+                class="clubs-modal__panel"
+                data-modal-panel="{{ category.slug }}"
+                {% if not forloop.first %}hidden{% endif %}
+            >
+                <div class="clubs-modal__header">
+                    <p class="eyebrow" tabindex="-1">{{ category.name }}</p>
+                </div>
+
+                <div class="clubs-modal__grid">
+                    {% for club in category.published_clubs %}
+                    {# Tarjeta individual de club #}
+                    <article
+                        class="club-modal-card"
+                        data-club-card
+                        data-club-name="{{ club.name|lower }}"
+                        data-members-count="{{ club.active_members_count }}"
+                        data-is-member="{% if club.id in joined_club_ids %}true{% else %}false{% endif %}"
+                    >
+                        <div class="club-modal-card__media">
+                            <a href="{% url 'clubs:detail' club.slug %}" class="club-modal-card__image-link" data-restore-category="{{ category.slug }}">
+                                {% if club.image %}
+                                <img src="{{ club.image.url }}" alt="{{ club.name }}">
+                                {% elif club.cover_image %}
+                                <img src="{{ club.cover_image.url }}" alt="{{ club.name }}">
+                                {% else %}
+                                <div class="club-modal-card__placeholder">
+                                    <span>{{ club.name|slice:":1"|upper }}</span>
+                                </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="club-modal-card__content">
+                            <div class="club-modal-card__title-row">
+                                <h3>{{ club.name }}</h3>
+                                <span class="club-modal-card__members-chip">
+                                    {{ club.active_members_count }} miembro{% if club.active_members_count != 1 %}s{% endif %}
+                                </span>
+                            </div>
+                            <p>
+                                {% if club.short_description %}
+                                    {{ club.short_description }}
+                                {% else %}
+                                    Club universitario activo dentro de la categoría {{ category.name }}.
+                                {% endif %}
+                            </p>
+                            <div class="club-modal-card__actions">
+                                {% if club.id in joined_club_ids %}
+                                <span class="club-modal-card__action is-member">
+                                    Ya eres miembro
+                                </span>
+                                {% else %}
+                                <button
+                                    type="button"
+                                    class="club-modal-card__action"
+                                    data-club-join
+                                    data-join-url="{% url 'clubs:join' club.slug %}"
+                                    data-detail-url="{% url 'clubs:detail' club.slug %}"
+                                    data-club-name="{{ club.name }}"
+                                >
+                                    Unirse
+                                </button>
+                                {% endif %}
+                                <a href="{% url 'clubs:detail' club.slug %}" class="club-modal-card__detail-chip" data-restore-category="{{ category.slug }}">Detalles</a>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+
+                <div class="clubs-modal__footer">
+                    <button
+                        type="button"
+                        class="clubs-modal__scroll-top"
+                        aria-label="Volver arriba"
+                        data-modal-scroll-top
+                    >
+                        &uarr; Inicio
+                    </button>
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+    </div>
+</div>

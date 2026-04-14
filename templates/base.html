@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UAX Life Hub{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body data-user-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+    {% include 'includes/header.html' %}
+    {# Contenido principal de cada página #}
+    <main>
+        {% include 'includes/messages.html' %}
+        {% block content %}{% endblock %}
+    </main>
+    {% include 'includes/footer.html' %}
+    {% include 'includes/global_login_modal.html' %}
+    {# Scripts base del sitio #}
+    <script src="{% static 'js/site/messages.js' %}"></script>
+    <script src="{% static 'js/site/header.js' %}"></script>
+    <script src="{% static 'js/site/global-login.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

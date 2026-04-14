@@ -47,6 +47,7 @@ El proyecto usa `python-decouple` y espera estas variables:
 ## Instalación de la base de datos con DBeaver
 
 El proyecto incluye una copia manual de la base de datos en formato `.backup` o `.sql` para restaurar directamente con DBeaver.
+Ruta: BBDD- Backup/bbdd_uaxlifehub_14042026
 
 ### Opción 1: restaurar un archivo `.backup`
 

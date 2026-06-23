@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import League, LeagueMatch, LeagueTeam, Sport, SportManager, SportTeam
+from .models import League, LeagueMatch, LeagueTeam, Sport, SportFacility, SportManager, SportTeam
 
 
 class SportManagerInline(admin.TabularInline):
@@ -17,6 +17,29 @@ class SportAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     fields = ("name", "slug", "image", "description", "active", "display_order")
     inlines = (SportManagerInline,)
+
+
+@admin.register(SportFacility)
+class SportFacilityAdmin(admin.ModelAdmin):
+    """Administracion de instalaciones deportivas publicas."""
+
+    list_display = ("name", "campus", "active", "display_order")
+    list_filter = ("active",)
+    search_fields = ("name", "campus", "summary", "sports")
+    prepopulated_fields = {"slug": ("name",)}
+    fields = (
+        "name",
+        "slug",
+        "image",
+        "campus",
+        "summary",
+        "sports",
+        "schedule",
+        "access",
+        "map_url",
+        "active",
+        "display_order",
+    )
 
 
 class LeagueTeamInline(admin.TabularInline):

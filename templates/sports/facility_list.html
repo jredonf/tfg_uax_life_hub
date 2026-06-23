@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Instalaciones deportivas | UAX Life Hub{% endblock %}
+
+{% block content %}
+<section class="page-section clubs-hub sports-facilities">
+    <div class="container">
+        <div class="clubs-hub__hero">
+            <p class="eyebrow">Instalaciones deportivas</p>
+            <h1>Explora las instalaciones deportivas de UAX Life</h1>
+            <p class="clubs-hub__intro">
+                Consulta los espacios deportivos disponibles para clubes, ligas internas y actividades universitarias.
+                Revisa sus usos principales, horarios orientativos y modo de acceso para organizar entrenamientos,
+                partidos o sesiones abiertas.
+            </p>
+        </div>
+
+        {% if facilities %}
+        <div class="category-card-grid sports-facilities__grid">
+            {% for facility in facilities %}
+            <article class="category-card sports-facility-card" id="instalacion-{{ facility.slug }}">
+                <div class="category-card__shine"></div>
+                <div class="category-card__media">
+                    {% if facility.image %}
+                    <img src="{{ facility.image.url }}" alt="{{ facility.name }}" class="category-card__image">
+                    {% else %}
+                    <div class="category-card__placeholder sports-facility-card__placeholder">
+                        <span>{{ forloop.counter|stringformat:"02d" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="category-card__content">
+                    <p class="category-card__label">{{ facility.campus }}</p>
+                    <h2>{{ facility.name }}</h2>
+                    <p class="category-card__description">{{ facility.summary }}</p>
+                    <div class="sports-facility-card__chips" aria-label="Deportes disponibles">
+                        {% for sport in facility.sport_list %}
+                        <span>{{ sport }}</span>
+                        {% endfor %}
+                    </div>
+                    <dl class="sports-facility-card__details">
+                        <div>
+                            <dt>Horario</dt>
+                            <dd>{{ facility.schedule }}</dd>
+                        </div>
+                        <div>
+                            <dt>Acceso</dt>
+                            <dd>{{ facility.access }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="category-card__footer">
+                    <div class="category-card__stat">
+                        <span class="category-card__stat-value">{{ facility.sport_list|length }}</span>
+                        <span class="category-card__stat-label">Usos</span>
+                    </div>
+                    {% if facility.map_url %}
+                    <a class="category-card__action" href="{{ facility.map_url }}" target="_blank" rel="noopener noreferrer">
+                        Ver ubicacion
+                    </a>
+                    {% else %}
+                    <span class="sports-facility-card__pending">Ubicacion pendiente</span>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="club-empty-state">
+            <p>No hay instalaciones deportivas publicadas todavia.</p>
+        </div>
+        {% endif %}
+
+        <div class="club-empty-state sports-facilities__note">
+            <p>
+                Para completar esta pagina, anade los enlaces de ubicacion y ajusta los horarios desde la vista de
+                instalaciones deportivas.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

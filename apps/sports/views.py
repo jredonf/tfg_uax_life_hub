@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView
 
 from .forms import LeagueMatchResultForm
-from .models import LeagueMatch, Sport
+from .models import LeagueMatch, Sport, SportFacility
 from .permissions import user_can_manage_sport
 from .standings import build_league_standings
 
@@ -54,6 +54,17 @@ class SportListView(TemplateView):
             )
 
         context["sports_data"] = sports_data
+        return context
+
+
+class SportFacilitiesView(TemplateView):
+    """Muestra la pagina publica de instalaciones deportivas."""
+
+    template_name = "sports/facility_list.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["facilities"] = SportFacility.objects.filter(active=True)
         return context
 
 

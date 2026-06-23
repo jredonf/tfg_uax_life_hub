@@ -3,7 +3,7 @@
     <ul class="menu" id="site-menu">
         <li><a href="{% url 'clubs:list' %}">Clubes y asociaciones</a></li>
         <li><a href="{% url 'sports:list' %}">Ligas internas</a></li>
-        <li><a href="#">Instalaciones deportivas</a></li>
+        <li><a href="{% url 'sports:facilities' %}">Instalaciones deportivas</a></li>
         <li><a href="{% url 'contact:page' %}">Contacto</a></li>
         <li class="menu-login-item">
             {% if not request.user.is_authenticated %}

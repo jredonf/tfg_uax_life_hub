@@ -31,6 +31,41 @@ class Sport(models.Model):
         return self.name
 
 
+class SportFacility(models.Model):
+    """Instalacion deportiva mostrada en la pagina publica."""
+
+    name = models.CharField(max_length=150, unique=True)
+    slug = models.SlugField(max_length=170, unique=True, blank=True)
+    image = models.ImageField(upload_to="sports/facilities/", blank=True, null=True)
+    campus = models.CharField(max_length=150)
+    summary = models.TextField()
+    sports = models.TextField(help_text="Introduce un uso o deporte por linea.")
+    schedule = models.CharField(max_length=150)
+    access = models.CharField(max_length=180)
+    map_url = models.URLField("Enlace de ubicacion", blank=True)
+    active = models.BooleanField(default=True)
+    display_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ("display_order", "name")
+        verbose_name = "Instalacion deportiva"
+        verbose_name_plural = "Instalaciones deportivas"
+
+    def save(self, *args, **kwargs):
+        # Genera el slug si todavia no se ha indicado desde el admin.
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def sport_list(self):
+        # Los usos se guardan sencillos: una linea por etiqueta.
+        return [sport.strip() for sport in self.sports.splitlines() if sport.strip()]
+
+
 class SportManager(models.Model):
     """Usuario responsable de gestionar un deporte concreto."""
 

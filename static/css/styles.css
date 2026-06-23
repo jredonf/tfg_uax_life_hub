@@ -5873,6 +5873,85 @@ table {
     background: var(--color-surface-alt);
 }
 
+/* Pagina publica de instalaciones deportivas. */
+.sports-facilities__grid {
+    margin-top: 36px;
+}
+
+.sports-facility-card {
+    min-height: 540px;
+}
+
+.sports-facility-card__placeholder {
+    background:
+        radial-gradient(circle at 18% 24%, rgba(255, 123, 0, 0.28), transparent 32%),
+        linear-gradient(135deg, rgba(0, 119, 182, 0.94), rgba(0, 95, 145, 0.9));
+}
+
+.sports-facility-card__placeholder span {
+    letter-spacing: 0;
+}
+
+.sports-facility-card__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.sports-facility-card__chips span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0, 119, 182, 0.1);
+    color: var(--color-primary-dark);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.sports-facility-card__details {
+    display: grid;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.sports-facility-card__details div {
+    display: grid;
+    gap: 2px;
+}
+
+.sports-facility-card__details dt {
+    color: var(--color-primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.sports-facility-card__details dd {
+    color: var(--color-muted);
+    font-weight: 700;
+}
+
+.sports-facility-card__pending {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 18px;
+    border: 1px solid rgba(0, 119, 182, 0.18);
+    border-radius: 999px;
+    color: var(--color-primary-dark);
+    font-weight: 800;
+    background: rgba(0, 119, 182, 0.08);
+}
+
+.sports-facilities__note {
+    margin-top: 28px;
+    text-align: left;
+}
+
 @media (max-width: 720px) {
     .sport-block__header,
     .match-row {
@@ -5891,5 +5970,9 @@ table {
 
     .match-result-form button {
         margin-left: auto;
+    }
+
+    .sports-facility-card {
+        min-height: 420px;
     }
 }

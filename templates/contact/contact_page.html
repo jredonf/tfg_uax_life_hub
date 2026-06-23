@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Contact | UAX Life Hub{% endblock %}
+{% block title %}Contacto | UAX Life Hub{% endblock %}
 
 {% block content %}
-{% include 'contact/partials/contact_intro.html' %}
+{% include 'contact/partials/contact_form_section.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/contact/contact-form.js' %}"></script>
 {% endblock %}

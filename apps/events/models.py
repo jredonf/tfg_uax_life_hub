@@ -48,3 +48,37 @@ class ClubEventAttendance(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.event}"
+
+
+class ContactRequest(models.Model):
+    """Guarda las consultas enviadas desde la página pública de contacto."""
+
+    class QueryType(models.TextChoices):
+        """Agrupa las áreas principales de consulta disponibles en el formulario."""
+
+        CLUBS_ASSOCIATIONS = "clubs_associations", "Clubes / Asociaciones"
+        FITNESS_CENTER = "fitness_center", "UAX Fitness Center"
+        INTERNAL_LEAGUES = "internal_leagues", "Ligas internas"
+        COMPETITION_TEAMS = "competition_teams", "Equipos de competición"
+        INDIVIDUAL_SPORTS = "individual_sports", "Deportes individuales"
+        TECHNICAL_SERVICE = "technical_service", "Servicio Técnico Web"
+
+    # Identifica a la persona que envía la consulta.
+    name = models.CharField(max_length=120)
+    email = models.EmailField()
+    # Clasifica el motivo principal del contacto.
+    query_type = models.CharField(max_length=40, choices=QueryType.choices)
+    # Guarda el tema concreto seleccionado dentro del área consultada.
+    query_topic = models.CharField(max_length=170)
+    # Guarda el detalle completo del mensaje recibido.
+    message = models.TextField(max_length=1500)
+    accepted_privacy = models.BooleanField(default=False)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-submitted_at",)
+        verbose_name = "solicitud de contacto"
+        verbose_name_plural = "solicitudes de contacto"
+
+    def __str__(self):
+        return f"{self.query_topic} - {self.name}"

@@ -42,6 +42,14 @@ El proyecto usa `python-decouple` y espera estas variables:
 - `DB_PASSWORD`
 - `DB_HOST`
 - `DB_PORT`
+- `ADMIN_CONTACT_EMAIL`
+- `DEFAULT_FROM_EMAIL`
+- `EMAIL_BACKEND`
+- `EMAIL_HOST`
+- `EMAIL_PORT`
+- `EMAIL_USE_TLS`
+- `EMAIL_HOST_USER`
+- `EMAIL_HOST_PASSWORD`
 
 
 ## Instalación de la base de datos con DBeaver

@@ -1,13 +1,201 @@
 {% extends 'base.html' %}
 
-{% block title %}Deporte y ligas | UAX Life Hub{% endblock %}
+{% block title %}Ligas internas | UAX Life Hub{% endblock %}
 
 {% block content %}
-<section class="page-section">
+<section class="page-section clubs-hub internal-leagues">
     <div class="container">
-        {# Introducción al módulo deportivo #}
-        <h1>Clubes deportivos y ligas internas</h1>
-        <p>Espacio reservado para equipos, calendarios, resultados y clasificación deportiva.</p>
+        {# Cabecera publica de ligas internas #}
+        <div class="clubs-hub__hero">
+            <p class="eyebrow">Ligas internas</p>
+            <h1>Explora las ligas internas de UAX Life</h1>
+            <p class="clubs-hub__intro">
+                Consulta las competiciones internas de fútbol sala, baloncesto, pádel y otros deportes activos de la
+                universidad. Revisa la clasificación, el calendario de partidos, los resultados y la plantilla de cada
+                equipo desde una página abierta a todos los usuarios.
+            </p>
+        </div>
+
+        {% if sports_data %}
+        <div class="category-card-grid sports-card-grid">
+            {% for item in sports_data %}
+            <article class="category-card sport-category-card">
+                <div class="category-card__shine"></div>
+                <div class="category-card__media">
+                    {% if item.sport.image %}
+                    <img src="{{ item.sport.image.url }}" alt="{{ item.sport.name }}" class="category-card__image">
+                    {% else %}
+                    <div class="category-card__placeholder sport-category-card__placeholder">
+                        <span>{{ item.sport.name|slice:":1"|upper }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="category-card__content">
+                    <p class="category-card__label">Liga interna</p>
+                    <h2>{{ item.sport.name }}</h2>
+                    <p class="category-card__description">
+                        {% if item.sport.description %}
+                            {{ item.sport.description }}
+                        {% else %}
+                            Deporte disponible dentro de las competiciones internas de UAX Life.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="category-card__footer">
+                    <div class="category-card__stat">
+                        <span class="category-card__stat-value">{{ item.league_count }}</span>
+                        <span class="category-card__stat-label">Ligas</span>
+                    </div>
+                    <a href="#deporte-{{ item.sport.slug }}" class="category-card__action">Ver liga</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="sports-league-list">
+            {% for item in sports_data %}
+            <article class="sport-block" id="deporte-{{ item.sport.slug }}">
+                <div class="sport-block__header">
+                    <div>
+                        <p class="eyebrow">Deporte</p>
+                        <h2>{{ item.sport.name }}</h2>
+                        {% if item.sport.description %}
+                        <p>{{ item.sport.description }}</p>
+                        {% endif %}
+                    </div>
+                    {% if item.can_manage %}
+                    <span class="manager-chip">Gestionable</span>
+                    {% endif %}
+                </div>
+
+                {% if item.leagues %}
+                <div class="league-grid">
+                    {% for league_data in item.leagues %}
+                    <section class="league-card">
+                        <div class="league-card__header">
+                            <div>
+                                <h3>{{ league_data.league.name }}</h3>
+                                <p>Temporada {{ league_data.league.season }}</p>
+                            </div>
+                        </div>
+
+                        <div class="league-card__section">
+                            <h4>Clasificación</h4>
+                            {% if league_data.standings %}
+                            <div class="league-table-wrap">
+                                <table class="league-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Equipo</th>
+                                            <th>PJ</th>
+                                            <th>G</th>
+                                            <th>E</th>
+                                            <th>P</th>
+                                            <th>DG</th>
+                                            <th>Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in league_data.standings %}
+                                        <tr>
+                                            <td>{{ row.team.name }}</td>
+                                            <td>{{ row.played }}</td>
+                                            <td>{{ row.wins }}</td>
+                                            <td>{{ row.draws }}</td>
+                                            <td>{{ row.losses }}</td>
+                                            <td>{{ row.goal_difference }}</td>
+                                            <td><strong>{{ row.points }}</strong></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="empty-text">Todavía no hay equipos en esta liga.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="league-card__section">
+                            <h4>Calendario y resultados</h4>
+                            {% if league_data.matches %}
+                            <div class="match-list">
+                                {% for match in league_data.matches %}
+                                <div class="match-row">
+                                    <div class="match-row__info">
+                                        <span>Jornada {{ match.match_day }}</span>
+                                        <strong>{{ match.home_team.name }} - {{ match.away_team.name }}</strong>
+                                        <small>
+                                            {% if match.played_at %}{{ match.played_at|date:"d/m/Y H:i" }}{% else %}Fecha pendiente{% endif %}
+                                            {% if match.location %} · {{ match.location }}{% endif %}
+                                        </small>
+                                    </div>
+
+                                    {% if item.can_manage %}
+                                    <form class="match-result-form" method="post" action="{% url 'sports:update_match_result' match.id %}">
+                                        {% csrf_token %}
+                                        <input type="number" name="home_score" min="0" value="{{ match.home_score|default_if_none:'' }}" aria-label="Goles local">
+                                        <span>-</span>
+                                        <input type="number" name="away_score" min="0" value="{{ match.away_score|default_if_none:'' }}" aria-label="Goles visitante">
+                                        <button type="submit">Guardar</button>
+                                    </form>
+                                    {% else %}
+                                    <div class="match-result">
+                                        {% if match.has_result %}
+                                        <strong>{{ match.home_score }} - {{ match.away_score }}</strong>
+                                        {% else %}
+                                        <span>Pendiente</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="empty-text">Todavía no hay partidos creados.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="league-card__section">
+                            <h4>Plantillas</h4>
+                            {% if league_data.teams %}
+                            <div class="team-roster-grid">
+                                {% for team in league_data.teams %}
+                                <details class="team-roster">
+                                    <summary>
+                                        <span>{{ team.name }}</span>
+                                        {% if team.captain_name %}<small>Capitán: {{ team.captain_name }}</small>{% endif %}
+                                    </summary>
+                                    {% if team.player_list %}
+                                    <ul>
+                                        {% for player in team.player_list %}
+                                        <li>{{ player }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                    <p>Plantilla pendiente de completar.</p>
+                                    {% endif %}
+                                </details>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <p class="empty-text">Todavía no hay equipos dados de alta.</p>
+                            {% endif %}
+                        </div>
+                    </section>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-text">Este deporte aún no tiene ligas activas.</p>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="sports-empty">
+            <h2>No hay ligas internas publicadas</h2>
+            <p>Cuando el administrador active deportes y ligas, aparecerán aquí para cualquier visitante.</p>
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

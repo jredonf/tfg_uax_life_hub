@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ClubEvent, ClubEventAttendance
+from .models import ClubEvent, ClubEventAttendance, ContactRequest
 
 
 @admin.register(ClubEvent)
@@ -16,3 +16,12 @@ class ClubEventAttendanceAdmin(admin.ModelAdmin):
 
     list_display = ("event", "user", "companions_count", "joined_at")
     search_fields = ("event__title", "user__username", "user__email")
+
+
+@admin.register(ContactRequest)
+class ContactRequestAdmin(admin.ModelAdmin):
+    """Consulta de mensajes enviados desde el formulario público."""
+
+    list_display = ("query_topic", "name", "email", "query_type", "submitted_at")
+    list_filter = ("query_type", "submitted_at")
+    search_fields = ("query_topic", "name", "email", "message")

@@ -1,0 +1,82 @@
+{# Bloque principal del formulario público de contacto #}
+<section class="page-section contact-section">
+    <div class="container contact-section__single">
+        {# Tarjeta del formulario con el mismo lenguaje visual que los formularios de clubes #}
+        <div class="contact-card">
+            <h1>Formulario de contacto</h1>
+            <form method="post" class="contact-form club-poll-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="contact-form__errors">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="contact-form__field contact-form__field--name">
+                    <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}
+                    <p class="contact-form__error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="contact-form__field contact-form__field--email">
+                    <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                    <p class="contact-form__error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="contact-form__field contact-form__field--query_type">
+                    <label for="{{ form.query_type.id_for_label }}">{{ form.query_type.label }}</label>
+                    {{ form.query_type }}
+                    {% for error in form.query_type.errors %}
+                    <p class="contact-form__error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="contact-form__field contact-form__field--query_topic">
+                    <label for="{{ form.query_topic.id_for_label }}">{{ form.query_topic.label }}</label>
+                    {{ form.query_topic }}
+                    {% if form.query_topic.help_text %}
+                    <small class="contact-form__help">{{ form.query_topic.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.query_topic.errors %}
+                    <p class="contact-form__error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="contact-form__field contact-form__field--message">
+                    <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+                    {{ form.message }}
+                    {% if form.message.help_text %}
+                    <small class="contact-form__help">{{ form.message.help_text }}</small>
+                    {% endif %}
+                    {% for error in form.message.errors %}
+                    <p class="contact-form__error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="contact-form__consent contact-form__consent--privacy">
+                    <label for="{{ form.accepted_privacy.id_for_label }}" class="contact-form__checkbox-label">
+                        {{ form.accepted_privacy }}
+                        <span>{{ form.accepted_privacy.label }}</span>
+                    </label>
+                    {% for error in form.accepted_privacy.errors %}
+                    <p class="contact-form__error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="contact-form__actions">
+                    <button type="submit" class="club-chip-button contact-form__submit">Enviar Formulario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{{ query_topic_groups|json_script:"contact-query-topic-groups" }}
